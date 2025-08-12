@@ -68,6 +68,8 @@
         <div class="os-div">
             <img src="../images/ios.svg" class="os-icon" alt="iOS Logo">
             <p class="os-stats" id="ios-stats"></p>
+            <p class="os-stats" id="ios-jit-stats"></p>
+            <p class="os-stats" id="ios-jitless-stats"></p>
             <p class="os-stats" id="ios-only-stats"></p>
             <p class="os-stats" id="not-ios-stats"></p>
         </div>
@@ -103,7 +105,8 @@
             "macos-only-arm": false,
             ios: false,
             "ios-only": false,
-            "not-ios": false
+            "not-ios": false,
+            "ios-jitless": false,
         };
 
         window.onDropdownButton = function (id) {
@@ -137,7 +140,9 @@
             macOSOnlyARM: [],
             ios: [],
             iosOnly: [],
-            notIOS: []
+            notIOS: [],
+            iosJITOnly: [],
+            iosJITLess: [],
         };
 
         $("#total").html(`Total Mods: ${mods.length}`);
@@ -161,7 +166,14 @@
             if (!mod.gd["mac-intel"] && !mod.gd["mac-arm"]) osSupport.notMacOS.push(mod);
             if (mod.gd["mac-intel"] && !mod.gd["mac-arm"]) osSupport.macOSOnlyIntel.push(mod);
             if (mod.gd["mac-arm"] && !mod.gd["mac-intel"]) osSupport.macOSOnlyARM.push(mod);
-            if (mod.gd.ios) osSupport.ios.push(mod);
+            if (mod.gd.ios) {
+                osSupport.ios.push(mod);
+                 if (mod.geode >= "4.6.0") {
+                    osSupport.iosJITLess.push(mod);
+                } else {
+                    osSupport.iosJITOnly.push(mod);
+                }
+            }
             if (mod.gd.ios && !mod.gd.win && !mod.gd.android32 && !mod.gd.android64 && !mod.gd["mac-intel"] && !mod.gd["mac-arm"]) osSupport.iosOnly.push(mod);
             if (!mod.gd.ios) osSupport.notIOS.push(mod);
         }
@@ -195,6 +207,8 @@
         createLabelWithDropdownStats("Only ARM", osSupport.macOSOnlyARM.length, "macos-only-arm");
 
         createLabelWithDropdownStats("iOS", osSupport.ios.length, "ios");
+        createLabelWithDropdownStats("iOS (JIT-Only)", osSupport.iosJITOnly.length, "ios-jit");
+        createLabelWithDropdownStats("iOS (JIT-Less)", osSupport.iosJITLess.length, "ios-jitless");
         createLabelWithDropdownStats("iOS-only", osSupport.iosOnly.length, "ios-only");
         createLabelWithDropdownStats("Not on iOS", osSupport.notIOS.length, "not-ios");
 
@@ -241,6 +255,8 @@
             $("#ios-dropdown").html(osSupport.ios.map(x => modToName(x, "")).join("<br>"));
             $("#ios-only-dropdown").html(osSupport.iosOnly.map(x => modToName(x, "")).join("<br>"));
             $("#not-ios-dropdown").html(osSupport.notIOS.map(x => modToName(x, "").slice(0, -4) + platformsToString(x.gd)).join("<br>"));
+            $("#ios-jit-dropdown").html(osSupport.iosJITOnly.map(x => modToName(x, "")).join("<br>"));
+            $("#ios-jitless-dropdown").html(osSupport.iosJITLess.map(x => modToName(x, "")).join("<br>"));
         }
 
         $("#alphabetical").on("change", updateSupport);
