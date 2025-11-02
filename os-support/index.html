@@ -69,6 +69,8 @@
             <img src="../images/ios.svg" class="os-icon" alt="iOS Logo">
             <p class="os-stats" id="ios-stats"></p>
             <p class="os-stats" id="ios-only-stats"></p>
+            <p class="os-stats" id="ios-only-jit-stats"></p>
+            <p class="os-stats" id="ios-jit-less-stats"></p>
             <p class="os-stats" id="not-ios-stats"></p>
         </div>
     </div>
@@ -137,11 +139,14 @@
             macOSOnlyARM: [],
             ios: [],
             iosOnly: [],
+            iosOnlyJIT: [],
+            iosJITLess: [],
             notIOS: []
         };
 
         $("#total").html(`Total Mods: ${mods.length}`);
         for (const mod of mods) {
+            const geodeVersion = parseInt(mod.geode.split(".").join(""));
             if (mod.gd.win) osSupport.windows.push(mod);
             if (mod.gd.win && !mod.gd.android32 && !mod.gd.android64 && !mod.gd["mac-intel"] && !mod.gd["mac-arm"] && !mod.gd.ios) osSupport.onlyWindows.push(mod);
             if (!mod.gd.win) osSupport.notWindows.push(mod);
@@ -163,6 +168,8 @@
             if (mod.gd["mac-arm"] && !mod.gd["mac-intel"]) osSupport.macOSOnlyARM.push(mod);
             if (mod.gd.ios) osSupport.ios.push(mod);
             if (mod.gd.ios && !mod.gd.win && !mod.gd.android32 && !mod.gd.android64 && !mod.gd["mac-intel"] && !mod.gd["mac-arm"]) osSupport.iosOnly.push(mod);
+            if (mod.gd.ios && geodeVersion >= 460) osSupport.iosJITLess.push(mod);
+            if (mod.gd.ios && geodeVersion < 460) osSupport.iosOnlyJIT.push(mod);
             if (!mod.gd.ios) osSupport.notIOS.push(mod);
         }
 
@@ -196,6 +203,8 @@
 
         createLabelWithDropdownStats("iOS", osSupport.ios.length, "ios");
         createLabelWithDropdownStats("iOS-only", osSupport.iosOnly.length, "ios-only");
+        createLabelWithDropdownStats("iOS (JIT only)", osSupport.iosOnlyJIT.length, "ios-only-jit");
+        createLabelWithDropdownStats("iOS (JIT-less)", osSupport.iosJITLess.length, "ios-jit-less");
         createLabelWithDropdownStats("Not on iOS", osSupport.notIOS.length, "not-ios");
 
         function platformsToString(gd) {
@@ -240,6 +249,8 @@
 
             $("#ios-dropdown").html(osSupport.ios.map(x => modToName(x, "")).join("<br>"));
             $("#ios-only-dropdown").html(osSupport.iosOnly.map(x => modToName(x, "")).join("<br>"));
+            $("#ios-only-jit-dropdown").html(osSupport.iosOnlyJIT.map(x => modToName(x, "")).join("<br>"));
+            $("#ios-jit-less-dropdown").html(osSupport.iosJITLess.map(x => modToName(x, "")).join("<br>"));
             $("#not-ios-dropdown").html(osSupport.notIOS.map(x => modToName(x, "").slice(0, -4) + platformsToString(x.gd)).join("<br>"));
         }
 

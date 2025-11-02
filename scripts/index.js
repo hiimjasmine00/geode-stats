@@ -26,7 +26,8 @@ function responseToMod(response, gd) {
         downloads: response.download_count,
         latestDownloads: response.versions[0].download_count,
         version: response.versions[0].version,
-        featured: response.featured
+        featured: response.featured,
+        hash: response.versions[0].hash
     }
 }
 
